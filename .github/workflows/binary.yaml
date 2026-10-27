@@ -1,73 +1,42 @@
-name: dash-fw-ubuntu
+name: ndash-fw
 
 on:
   push:
   pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
-  dash-fw-ubuntu:
+  ndash-fw:
     strategy:
+      fail-fast: false
       matrix:
-        display: [ JC8048W550C, WAVESHARE_S3_LCD7, WAVESHARE_S3_LCD5, Sunton_S3_LCD7 ]
+        # The first two are tried on hardware; the other two only have to build.
+        board: [ WAVESHARE_S3_LCD7, WAVESHARE_S3_LCD5, JC8048W550C, Sunton_S3_LCD7 ]
     runs-on: ubuntu-latest
+    container: espressif/idf:v6.0
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: echo
-        run: |
-          echo "::hello ${{ matrix.display }}"
+      # The checkout is owned by another user inside the container; without this git refuses to
+      # run and the commit in manifest.json would be "unknown".
+      - name: Allow git in the workspace
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Setup Arduino CLI
-        uses: arduino/setup-arduino-cli@v2
-
-      - name: date into header
-        working-directory: firmware
+      # tools/build_release.py: builds into build_release/<board>/ with the release options and packs
+      # release/v<version>/nDash-v<version>-<board>/ (+ .zip), the same as on a developer's machine.
+      - name: Build and package ${{ matrix.board }}
+        shell: bash
         run: |
-          ./current_date.sh
-
-      # see also 0-setup.bat
-      - name: Install platform
-        run: |
-          arduino-cli core update-index
-          arduino-cli lib install lvgl@8.4.0
-          arduino-cli lib install LovyanGFX@1.2.0
-          arduino-cli lib install ESP32_IO_Expander@1.1.0
-          arduino-cli core install esp32:esp32@3.2.1
-      
-      # - name: Configure
-      #   working-directory: firmware
-      #   run: |
-      #     echo "#define ${{matrix.display}} 1" > config.h
-
-      - name: Compile Sketch
-        working-directory: firmware
-        run: |
-          arduino-cli compile -b esp32:esp32:esp32s3:FlashSize=8M,PartitionScheme=huge_app,PSRAM=opi firmware.ino -e -v --build-property "build.defines=-DBOARD_HAS_PSRAM -D${{matrix.display}}" --build-property compiler.optimization_flags=-Os
+          . "$IDF_PATH/export.sh"
+          python3 tools/build_release.py --board ${{ matrix.board }}
 
       - name: Looking at folder
-        working-directory: firmware
-        run: |
-          ls -l
-          ls -l build
-          ls -l build/esp32.esp32.esp32s3
+        run: ls -lR release | head -80
 
-      - name: Release Manifest
-        run: |
-          date >> release/release.txt
-          git rev-parse HEAD >> release/release.txt
-          echo ${{ matrix.display }} >> release/release.txt        
-
-      - name: Adding help into artifact folder
-        run: |
-          cp release/* firmware/build/
-
-      - name: Upload .bin
+      - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: "dash_${{ matrix.display }}"
-          path: "firmware/build/*"
-
+          name: "ndash_${{ matrix.board }}"
+          path: "release/*/*.zip"
+          if-no-files-found: error

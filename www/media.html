@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash - Media</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_media">
+<div id="nav"></div>
+<div class="container py-3" style="max-width:860px">
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between small text-muted mb-1">
+        <span data-i18n="media_storage"></span><span id="usage"></span>
+      </div>
+      <div class="progress" style="height:6px"><div class="progress-bar" id="usageBar" style="width:0"></div></div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header" data-i18n="media_new"></div>
+    <div class="card-body">
+      <input type="file" class="form-control form-control-sm mb-2" id="file" accept="image/*,.bin,.fnt">
+      <div id="pending" style="display:none">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+          <div class="thumb"><img id="pendingThumb" alt=""><i class="fas fa-font fa-2x text-muted" id="pendingIcon" style="display:none"></i></div>
+          <div class="d-flex flex-column gap-2">
+            <input class="form-control form-control-sm" id="pendingName" style="max-width:16em" maxlength="31">
+            <div><button class="btn btn-sm btn-accent" id="upload"><i class="fas fa-upload me-1"></i><span data-i18n="media_upload"></span></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="small text-muted mt-2" id="pendingInfo"></div>
+      <div class="form-text" data-i18n="media_hint"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span data-i18n="media_images"></span> <span class="small text-muted" id="count"></span></div>
+    <div class="card-body" id="files"></div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-header"><span data-i18n="media_fonts"></span> <span class="small text-muted" id="fontCount"></span></div>
+    <div class="card-body">
+      <div id="fonts"></div>
+      <div class="form-text mt-2" data-i18n="media_fonts_hint"></div>
+    </div>
+  </div>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script src="/lvbin.js"></script>
+<script src="/media.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash - Logs</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_logs">
+<div id="nav"></div>
+<div class="container py-3" style="max-width:960px">
+
+  <!-- The recording -->
+  <div class="card mb-3">
+    <div class="card-header"><i class="fas fa-circle-dot me-2"></i><span data-i18n="log_title"></span></div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="badge" id="stateBadge">-</span>
+        <span class="small text-muted" id="recText"></span>
+        <span class="small text-muted" id="freeText"></span>
+      </div>
+      <div class="small text-danger mt-2" id="errText" style="display:none"></div>
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <button class="btn btn-sm btn-accent" id="start"><i class="fas fa-play me-1"></i><span data-i18n="log_start"></span></button>
+        <button class="btn btn-sm btn-outline-light" id="stop"><i class="fas fa-stop me-1"></i><span data-i18n="log_stop"></span></button>
+        <button class="btn btn-sm btn-outline-light" id="rescan"><i class="fas fa-rotate me-1"></i><span data-i18n="log_rescan"></span></button>
+      </div>
+      <div class="form-text mt-2" data-i18n="log_hint"></div>
+    </div>
+  </div>
+
+  <!-- When to record -->
+  <div class="card mb-3">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+      <span><i class="fas fa-sliders me-2"></i><span data-i18n="log_when"></span></span>
+      <span class="badge bg-warning text-dark" id="dirty" style="display:none" data-i18n="not_saved"></span>
+      <button class="btn btn-sm btn-accent ms-auto" id="apply"><i class="fas fa-check me-1"></i><span data-i18n="can_apply"></span></button>
+    </div>
+    <div class="card-body">
+      <div class="row g-2" id="modes"></div>
+      <div class="row g-2 align-items-end mt-1" id="condBox" style="display:none">
+        <div class="col-6 col-md-3">
+          <label class="form-label small" for="condSignal" data-i18n="ed_signal"></label>
+          <select class="form-select form-select-sm" id="condSignal"></select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label small" for="condOp" data-i18n="log_op"></label>
+          <select class="form-select form-select-sm" id="condOp">
+            <option value=">" data-i18n="log_op_gt"></option>
+            <option value="<" data-i18n="log_op_lt"></option>
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label small" for="condValue" data-i18n="log_value"></label>
+          <input type="number" step="any" class="form-control form-control-sm" id="condValue">
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label small" for="condDelay" data-i18n="log_stop_delay"></label>
+          <input type="number" min="0" max="3600" step="1" class="form-control form-control-sm" id="condDelay">
+        </div>
+        <div class="col-12 form-text" id="condText"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The files -->
+  <div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+      <span><i class="fas fa-folder-open me-2"></i><span data-i18n="log_files"></span> <span class="small text-muted" id="fileCount"></span></span>
+      <button class="btn btn-sm btn-outline-light ms-auto" id="reloadFiles"><i class="fas fa-rotate me-1"></i><span data-i18n="ed_reload"></span></button>
+    </div>
+    <div class="card-body">
+      <div class="small text-muted" id="filesNote"></div>
+      <div id="files"></div>
+      <div class="form-text mt-2" data-i18n="log_files_hint"></div>
+    </div>
+  </div>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script src="/logs.js"></script>
+</body>
+</html>

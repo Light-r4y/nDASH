@@ -1,0 +1,10 @@
+# Name,   Type, SubType, Offset,   Size
+# Two OTA slots with rollback (the firmware confirms itself in main.c) and the web
+# interface in a SPIFFS partition that is updated as a whole; media holds pictures.
+nvs,      data, nvs,     0x9000,   0x10000
+otadata,  data, ota,     0x19000,  0x2000
+phy_init, data, phy,     0x1B000,  0x1000
+ota_0,    app,  ota_0,   0x20000,  0x300000
+ota_1,    app,  ota_1,   0x320000, 0x300000
+www,      data, spiffs,  0x620000, 0x100000
+media,    data, spiffs,  0x720000, 0x8E0000

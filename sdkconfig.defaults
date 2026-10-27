@@ -1,0 +1,109 @@
+# Target
+CONFIG_IDF_TARGET="esp32s3"
+
+# PSRAM: 800x480x16bpp framebuffer (~750KB) does not fit internal SRAM,
+# RGB LCD peripheral requires the panel framebuffer to live in PSRAM.
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+CONFIG_SPIRAM_USE_MALLOC=y
+
+# Flash
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# A failed OTA is rolled back: the firmware confirms itself in app_main().
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# Web interface (tasks/webcfg): paths like /fontawesome/webfonts/s900.woff2 are longer
+# than the default 32-byte SPIFFS name, and browsers send headers longer than 512 bytes.
+CONFIG_SPIFFS_OBJ_NAME_LEN=48
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
+CONFIG_HTTPD_MAX_URI_LEN=512
+
+# Rendering performance / RGB panel stability (settings borrowed from the
+# roundDash_2.1 project, same S3 + octal-PSRAM + RGB-panel combination):
+#  - 240 MHz CPU and -O2 instead of the 160 MHz / -Og defaults: LVGL draws in
+#    software, so this is the cheapest speed-up there is;
+#  - 64-byte data cache line: wider channel to PSRAM (framebuffer reads/writes);
+#  - 32 KB instruction and 64 KB data caches (the maximum): code and data both live in PSRAM, so
+#    the bigger caches speed rendering up by a quarter, for 48 KB of internal RAM;
+#  - code and rodata execute from PSRAM, so writing flash (NVS, OTA) does not
+#    stall the cache and freeze the frame output; this is also what makes the
+#    RGB ISR below safe to run while flash is being written;
+#  - RGB interrupts placed in IRAM, and the LCD DMA restarted on every VSYNC, so
+#    one glitch (e.g. a bandwidth hiccup) cannot leave the picture shifted
+#    permanently.
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
+CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y
+CONFIG_ESP32S3_INSTRUCTION_CACHE_32KB=y
+CONFIG_ESP32S3_DATA_CACHE_64KB=y
+CONFIG_SPIRAM_XIP_FROM_PSRAM=y
+CONFIG_LCD_RGB_ISR_IRAM_SAFE=y
+CONFIG_LCD_RGB_RESTART_IN_VSYNC=y
+
+# Main task needs headroom for LVGL/UI init call chain
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# Log level. ESP_LOGD is compiled in but off by default: the UART console is written by polling, at
+# 115200 bit/s a debug level (every httpd call prints several lines) kept core 0 busy for seconds, made
+# every web request take 100+ ms and starved the other tasks of that core (the touch gestures). The
+# level can be raised at run time (esp_log_level_set); NDASH_LOG_LEVEL=warn (release builds) keeps
+# only the warnings, see sdkconfig.log_warn.
+CONFIG_LOG_MAXIMUM_LEVEL_DEBUG=y
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+
+# None of the 4 supported boards have an external UART-USB bridge - the only
+# physical port is the S3's native USB (USB-Serial-JTAG), so that's where
+# console/log output actually needs to go. Without this, ESP_LOG* output
+# silently goes to UART0 GPIO43/44, which aren't wired to anything on these
+# boards, and idf.py monitor / any serial terminal on the USB port sees
+# nothing at all.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+# LVGL 9.6 (configured here, there is no lv_conf.h). Colour format defaults to
+# RGB565, which is what the panels take.
+#  - LVGL's memory comes from the normal heap (large blocks go to PSRAM) instead of
+#    its fixed 64 KB pool;
+#  - redraw at most every 16 ms - the panels refresh at ~31-39 Hz and, in the
+#    tear-free mode used by esp_lvgl_port, a frame is only swapped in at VSYNC
+#    anyway, this just lets the next frame start without an extra wait.
+CONFIG_LV_CONF_SKIP=y
+CONFIG_LV_FONT_MONTSERRAT_20=y
+CONFIG_LV_FONT_MONTSERRAT_26=y
+CONFIG_LV_FONT_MONTSERRAT_36=y
+CONFIG_LV_FONT_MONTSERRAT_48=y
+# Needed to load LVGL bin fonts from a memory buffer (the fonts embedded in the firmware).
+CONFIG_LV_USE_FS_MEMFS=y
+CONFIG_LV_FS_MEMFS_LETTER=77
+CONFIG_LV_USE_CLIB_MALLOC=y
+CONFIG_LV_DEF_REFR_PERIOD=16
+
+# FAT (the microSD card of the logger): 512-byte sectors. The 4096 default is for wear-levelled flash,
+# which this project does not use; it would make every FAT volume and every open file take a 4 KB
+# buffer of internal RAM instead of 512 bytes.
+CONFIG_FATFS_SECTOR_512=y
+
+# Internal RAM (the scarce one: bounce buffer of the panel, the caches, stacks): with the web server
+# up and the logger on, 3 KB were left and httpd_start failed. Measured on the 7" board with the AP up:
+# 3 KB free -> 24 KB free after the options below.
+#  - code runs from PSRAM anyway, so the IRAM copies of the Wi-Fi / PHY hot paths are not needed;
+#  - no A-MPDU (aggregation): the config pages do not need the throughput, it costs buffers;
+#  - ordinary malloc() above 512 bytes goes to PSRAM (stacks and DMA buffers stay internal);
+#  - the buffers of Wi-Fi and lwIP are taken from PSRAM first; fewer static Wi-Fi receive buffers.
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=512
+CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
+CONFIG_ESP_WIFI_IRAM_OPT=n
+CONFIG_ESP_WIFI_RX_IRAM_OPT=n
+CONFIG_ESP_PHY_IRAM_OPT=n
+# Aggregation for what the dash sends (the pages go dash -> phone): without it the link gave 1-2 Mbit/s.
+CONFIG_ESP_WIFI_AMPDU_TX_ENABLED=y
+CONFIG_ESP_WIFI_AMPDU_RX_ENABLED=n
+CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM=6
+
+# Web over the board's Wi-Fi: with the default 4-segment window (5760 bytes) a page waits for an
+# acknowledgement every 4 kB. Twice as much, the buffers come from PSRAM.
+CONFIG_LWIP_TCP_SND_BUF_DEFAULT=11520
+CONFIG_LWIP_TCP_WND_DEFAULT=11520

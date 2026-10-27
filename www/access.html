@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash - Access</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_access">
+<div id="nav"></div>
+<div class="container py-4" style="max-width: 760px">
+  <div class="card mb-3">
+    <div class="card-header" data-i18n="acc_password"></div>
+    <div class="card-body">
+      <p class="text-muted small" data-i18n="acc_password_hint"></p>
+      <p><span data-i18n="acc_protection"></span>: <b id="authState">...</b></p>
+      <div class="input-group mb-2">
+        <input class="form-control" id="newPass" type="password" autocomplete="new-password" data-i18n-placeholder="acc_new_password">
+        <button class="btn btn-accent" id="setPass" data-i18n="acc_set"></button>
+        <button class="btn btn-outline-light" id="clearPass" data-i18n="acc_clear"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" data-i18n="acc_wifi"></div>
+    <div class="card-body">
+      <p class="text-muted small" data-i18n="acc_wifi_hint"></p>
+      <p><span data-i18n="acc_network"></span>: <b id="ssidNow">...</b> <span id="defPass" class="badge text-bg-warning d-none" data-i18n="acc_default_pass"></span></p>
+      <div class="mb-2">
+        <label class="form-label" for="ssid" data-i18n="acc_ssid"></label>
+        <input class="form-control" id="ssid" maxlength="32" data-i18n-placeholder="acc_ssid_placeholder">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="wpass" data-i18n="acc_wpass"></label>
+        <input class="form-control" id="wpass" type="password" autocomplete="new-password">
+      </div>
+      <button class="btn btn-accent" id="saveWifi" data-i18n="save"></button>
+    </div>
+  </div>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let authOn = false;
+
+function renderAuth() { $('authState').textContent = t(authOn ? 'on' : 'off'); }
+const onLangChange = renderAuth;
+
+async function loadAuth() {
+  const r = await api('GET', '/api/auth/status');
+  if (r.ok) { authOn = !!r.data.enabled; renderAuth(); }
+}
+async function loadWifi() {
+  const r = await api('GET', '/api/wifi');
+  if (!r.ok) return;
+  $('ssidNow').textContent = r.data.ssid;
+  $('ssid').value = r.data.custom_ssid ? r.data.ssid : '';
+  $('ssid').placeholder = r.data.default_ssid;
+  $('defPass').classList.toggle('d-none', !r.data.password_default);
+}
+async function setPassword(pass) {
+  const r = await api('POST', '/api/auth/password', { password: pass });
+  if (r.ok) {
+    sessionStorage.removeItem(ND_AUTH_KEY);  // the old header no longer matches
+    if (pass) sessionStorage.setItem(ND_AUTH_KEY, 'Basic ' + btoa('nd:' + pass));
+    toast(t(pass ? 'acc_pass_set' : 'acc_pass_cleared'));
+    $('newPass').value = '';
+    loadAuth();
+    checkAuthStatus();
+  } else toast(t('failed') + ': ' + errText(r), false);
+}
+$('setPass').onclick = () => { if ($('newPass').value) setPassword($('newPass').value); };
+$('clearPass').onclick = () => setPassword('');
+$('saveWifi').onclick = async () => {
+  const r = await api('POST', '/api/wifi', { ssid: $('ssid').value, password: $('wpass').value });
+  if (r.ok) { toast(t('acc_wifi_saved')); $('wpass').value = ''; loadWifi(); }
+  else toast(t('not_saved') + ': ' + errText(r), false);
+};
+navbar('/access.html');
+loadAuth(); loadWifi();
+</script>
+</body>
+</html>

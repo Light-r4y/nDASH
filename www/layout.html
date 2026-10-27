@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash - Screens</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_editor">
+<div id="nav"></div>
+<div class="container-fluid py-3 px-3 px-lg-4">
+
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <div class="btn-group" id="screenTabs"></div>
+    <button class="btn btn-sm btn-outline-light" id="screenAdd" data-i18n-title="ed_screen_add"><i class="fas fa-plus"></i></button>
+    <button class="btn btn-sm btn-outline-light" id="screenDel" data-i18n-title="ed_screen_del"><i class="fas fa-trash"></i></button>
+    <span class="small ms-2" id="state">-</span>
+    <span class="small ms-2" id="live"></span>
+    <div class="ms-auto d-flex flex-wrap gap-2">
+      <button class="btn btn-sm btn-outline-light" id="undo" data-i18n-title="ed_undo"><i class="fas fa-rotate-left"></i></button>
+      <button class="btn btn-sm btn-outline-light" id="reload"><i class="fas fa-download me-1"></i><span data-i18n="ed_reload"></span></button>
+      <button class="btn btn-sm btn-outline-light" id="reset"><i class="fas fa-arrow-rotate-left me-1"></i><span data-i18n="ed_reset"></span></button>
+      <button class="btn btn-sm btn-accent" id="apply"><i class="fas fa-check me-1"></i><span data-i18n="ed_apply"></span></button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-xl-8">
+      <div class="card">
+        <div class="card-header d-flex flex-wrap align-items-center gap-2">
+          <span data-i18n="ed_preview"></span>
+          <div class="d-flex flex-wrap gap-1 ms-md-2">
+            <button class="btn btn-sm btn-outline-light" data-add="tile"><i class="fas fa-square me-1"></i><span data-i18n="ed_t_tile"></span></button>
+            <button class="btn btn-sm btn-outline-light" data-add="dial"><i class="fas fa-circle-notch me-1"></i><span data-i18n="ed_t_dial"></span></button>
+            <button class="btn btn-sm btn-outline-light" data-add="bar"><i class="fas fa-grip-lines me-1"></i><span data-i18n="ed_t_bar"></span></button>
+            <button class="btn btn-sm btn-outline-light" data-add="segments"><i class="fas fa-ellipsis me-1"></i><span data-i18n="ed_t_segments"></span></button>
+            <button class="btn btn-sm btn-outline-light" data-add="value"><i class="fas fa-hashtag me-1"></i><span data-i18n="ed_t_value"></span></button>
+            <button class="btn btn-sm btn-outline-light" data-add="text"><i class="fas fa-font me-1"></i><span data-i18n="ed_t_text"></span></button>
+          </div>
+          <div class="ms-auto d-flex align-items-center gap-3">
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input" type="checkbox" id="sweep">
+              <label class="form-check-label small text-muted" for="sweep" data-i18n="ed_sweep"></label>
+            </div>
+            <label class="small text-muted d-flex align-items-center gap-2 mb-0"><span data-i18n="ed_sample"></span>
+              <input type="range" class="form-range" id="sample" min="0" max="100" value="60" style="width:130px">
+            </label>
+          </div>
+        </div>
+        <div class="card-body p-2">
+          <div id="stageWrap"><div id="stage"></div></div>
+          <div class="form-text mt-2" data-i18n="ed_drag_hint"></div>
+          <div class="form-text" data-i18n="ed_preview_note"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4">
+      <ul class="nav nav-tabs" id="tabs">
+        <li class="nav-item"><a class="nav-link active" data-tab="widget" href="#" data-i18n="ed_tab_widget"></a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="list" href="#" data-i18n="ed_tab_list"></a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="signals" href="#" data-i18n="ed_tab_signals"></a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="screen" href="#" data-i18n="ed_tab_screen"></a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="json" href="#">JSON</a></li>
+      </ul>
+      <div class="card tab-body">
+        <div class="card-body" id="panel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script src="/lvbin.js"></script>
+<script src="/editor.js"></script>
+</body>
+</html>

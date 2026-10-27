@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_main">
+<div id="nav"></div>
+<div class="container py-4 d-flex flex-column" style="max-width: 960px; min-height: calc(100vh - 150px)">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header" data-i18n="home_status"></div>
+        <div class="card-body"><dl class="kv" id="status"><dt>...</dt><dd></dd></dl></div>
+      </div>
+    </div>
+    <div class="col-md-6" id="brightCard">
+      <div class="card h-100">
+        <div class="card-header" data-i18n="home_brightness"></div>
+        <div class="card-body">
+          <input type="range" class="form-range" id="bright" min="5" max="100" step="1">
+          <div class="form-text"><span id="brightVal">-</span> %</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header" data-i18n="home_button"></div>
+        <div class="card-body">
+          <label class="form-label small" for="btnPin" data-i18n="home_button_pin"></label>
+          <input type="number" class="form-control form-control-sm" id="btnPin" min="0" max="48" step="1" style="max-width:8rem">
+          <div class="form-text" id="btnHint" data-i18n="home_button_hint"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header" data-i18n="home_units"></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label small" for="unitBaro" data-i18n="home_unit_baro"></label>
+              <select class="form-select form-select-sm" id="unitBaro"><option value="kpa">kPa</option><option value="inhg">inHg</option></select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small" for="unitBoost" data-i18n="home_unit_boost"></label>
+              <select class="form-select form-select-sm" id="unitBoost"><option value="bar">bar</option><option value="psi">psi / inHg</option></select>
+            </div>
+          </div>
+          <div class="form-text" data-i18n="home_units_hint"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="text-center text-muted small pt-4 mt-auto">by Light_r4y</footer>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script>
+let lastStatus = null;
+
+function uptime(s) {
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return (d ? d + ' ' + t('u_day') + ' ' : '') + (h ? h + ' ' + t('u_hour') + ' ' : '') + m + ' ' + t('u_min') + ' ' + (s % 60) + ' ' + t('u_sec');
+}
+const kb = (n) => (n / 1024).toFixed(0) + ' ' + t('u_kb');
+
+function renderStatus() {
+  const s = lastStatus;
+  if (!s) return;
+  const rows = [
+    [t('st_firmware'), s.fw_version], [t('st_board'), s.board], [t('st_uptime'), uptime(s.uptime_s)],
+    [t('st_reset'), t('rr_' + s.reset_reason) === 'rr_' + s.reset_reason ? s.reset_reason : t('rr_' + s.reset_reason)],
+    [t('st_clients'), s.ap_clients],
+    [t('st_ram'), kb(s.heap.int_free) + ' ' + t('st_free') + ' (' + t('st_min') + ' ' + kb(s.heap.int_min) + ')'],
+    [t('st_psram'), kb(s.heap.psram_free) + ' ' + t('st_free')],
+  ];
+  document.getElementById('status').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+}
+const onLangChange = renderStatus;
+
+async function loadStatus() {
+  const r = await api('GET', '/api/status');
+  if (r.ok) { lastStatus = r.data; renderStatus(); }
+}
+
+async function loadBrightness() {
+  const r = await api('GET', '/api/display');
+  if (!r.ok) return;
+  // A board without a brightness control (Waveshare 5"): no slider, and the button hint has no brightness in it.
+  if (r.data.has_brightness === false) {
+    document.getElementById('brightCard').hidden = true;
+    document.getElementById('btnHint').dataset.i18n = 'home_button_hint_nobr';
+    applyI18n();
+  }
+  document.getElementById('bright').value = r.data.brightness;
+  document.getElementById('brightVal').textContent = r.data.brightness;
+  document.getElementById('unitBaro').value = r.data.baro || 'kpa';
+  document.getElementById('unitBoost').value = r.data.boost || 'bar';
+  document.getElementById('btnPin').value = r.data.button_pin | 0;
+}
+
+// The button: a pin of the board; the dash refuses the ones it uses itself.
+document.getElementById('btnPin').addEventListener('change', async (e) => {
+  const r = await api('POST', '/api/display', { button_pin: Number(e.target.value) });
+  if (r.ok) toast(t('home_units_saved')); else { toast(errText(r), false); loadBrightness(); }
+});
+
+// The pressure units: at once, the screen is built again in them.
+for (const [id, key] of [['unitBaro', 'baro'], ['unitBoost', 'boost']]) {
+  document.getElementById(id).addEventListener('change', async (e) => {
+    const r = await api('POST', '/api/display', { [key]: e.target.value });
+    if (r.ok) toast(t('home_units_saved')); else toast(errText(r), false);
+  });
+}
+
+let brightTimer = null;
+document.getElementById('bright').addEventListener('input', (e) => {
+  document.getElementById('brightVal').textContent = e.target.value;
+  clearTimeout(brightTimer);
+  brightTimer = setTimeout(async () => {
+    const r = await api('POST', '/api/display', { brightness: Number(e.target.value) });
+    if (!r.ok) toast(errText(r), false);
+  }, 250);
+});
+
+navbar('/');
+loadStatus();
+loadBrightness();
+setInterval(loadStatus, 5000);
+</script>
+</body>
+</html>

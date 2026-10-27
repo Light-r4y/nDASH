@@ -1,0 +1,2 @@
+# Added by NDASH_LOG_LEVEL=warn (the release build): only warnings and errors on the console.
+CONFIG_LOG_DEFAULT_LEVEL_WARN=y

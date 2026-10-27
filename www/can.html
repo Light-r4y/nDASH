@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash - CAN</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_can">
+<div id="nav"></div>
+<div class="container-fluid py-3 px-3 px-lg-4">
+  <div class="row g-3 mb-3">
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header" data-i18n="can_bus"></div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label" for="bitrate" data-i18n="can_bitrate"></label>
+            <select class="form-select" id="bitrate"></select>
+          </div>
+          <div class="mb-1">
+            <label class="form-label" for="mode" data-i18n="can_mode"></label>
+            <select class="form-select" id="mode">
+              <option value="normal" data-i18n="can_mode_normal"></option>
+              <option value="listen_only" data-i18n="can_mode_listen"></option>
+            </select>
+          </div>
+          <div class="form-text mb-3" data-i18n="can_mode_hint"></div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="heartbeat">
+            <label class="form-check-label" for="heartbeat" data-i18n="can_heartbeat"></label>
+          </div>
+          <div class="form-check mb-1">
+            <input class="form-check-input" type="checkbox" id="demo">
+            <label class="form-check-label" for="demo" data-i18n="can_demo"></label>
+          </div>
+          <div class="form-text mb-3" data-i18n="can_demo_hint"></div>
+          <button class="btn btn-accent" id="save"><i class="fas fa-check me-1"></i><span data-i18n="can_apply"></span></button>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center"><span data-i18n="can_state"></span><span class="badge ms-auto" id="stateBadge">-</span></div>
+        <div class="card-body"><dl class="kv" id="state"><dt>...</dt><dd></dd></dl></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+      <span data-i18n="can_map"></span>
+      <span class="small" id="mapState">-</span>
+      <div class="ms-auto d-flex flex-wrap gap-2">
+        <button class="btn btn-sm btn-outline-light" id="mapExpand" data-i18n-title="can_expand_all"><i class="fas fa-angles-down"></i></button>
+        <button class="btn btn-sm btn-outline-light" id="mapCollapse" data-i18n-title="can_collapse_all"><i class="fas fa-angles-up"></i></button>
+        <button class="btn btn-sm btn-outline-light" id="mapAdd"><i class="fas fa-plus me-1"></i><span data-i18n="can_add"></span></button>
+        <button class="btn btn-sm btn-outline-light" id="mapReload"><i class="fas fa-download me-1"></i><span data-i18n="can_reload"></span></button>
+        <button class="btn btn-sm btn-outline-light" id="mapReset" data-i18n-title="can_preset_hint"><i class="fas fa-arrow-rotate-left me-1"></i><span data-i18n="can_preset"></span></button>
+        <button class="btn btn-sm btn-accent" id="mapApply"><i class="fas fa-check me-1"></i><span data-i18n="can_apply"></span></button>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small mb-2" data-i18n-html="can_map_hint"></p>
+      <div id="rows"></div>
+      <div class="text-muted small py-2" id="mapEmpty" data-i18n="can_map_empty" style="display:none"></div>
+      <datalist id="sigNames"></datalist>
+      <div id="problems" class="text-danger small mt-2"></div>
+      <div class="mt-3" id="bitsBox"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+      <span data-i18n="can_sniffer"></span>
+      <input class="form-control form-control-sm ms-auto" id="filter" style="max-width:13rem" data-i18n-placeholder="can_filter">
+    </div>
+    <div class="card-body">
+      <p class="text-muted small" data-i18n="can_sniffer_hint"></p>
+      <div class="table-responsive">
+      <table class="frames">
+        <thead><tr><th>ID</th><th data-i18n="can_dlc"></th><th data-i18n="can_data"></th><th data-i18n="can_period"></th><th data-i18n="can_count"></th><th data-i18n="can_mapped"></th></tr></thead>
+        <tbody id="frames"></tbody>
+      </table>
+      </div>
+      <div class="text-muted small py-2" id="framesEmpty" data-i18n="can_sniffer_empty" style="display:none"></div>
+    </div>
+  </div>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script src="/can.js"></script>
+</body>
+</html>

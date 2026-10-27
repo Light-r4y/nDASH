@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nDash - Bench</title>
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-title="title_bench">
+<div id="nav"></div>
+<div class="container py-3" style="max-width:960px">
+
+  <div class="card mb-3">
+    <div class="card-header d-flex align-items-center gap-2">
+      <span data-i18n="bench_cmds"></span>
+      <span class="small" id="engine">-</span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small" data-i18n="bench_cmds_hint"></p>
+      <div id="groups"></div>
+      <div class="text-muted small py-2" id="noCmds" style="display:none" data-i18n="bench_no_cmds"></div>
+    </div>
+  </div>
+
+  <details class="card mb-3" id="editBox">
+    <summary class="card-header" data-i18n="bench_edit"></summary>
+    <div class="card-body">
+      <p class="text-muted small" data-i18n="bench_edit_hint"></p>
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <button class="btn btn-sm btn-outline-light" id="cmdAdd"><i class="fas fa-plus me-1"></i><span data-i18n="can_add"></span></button>
+        <button class="btn btn-sm btn-outline-light" id="cmdReload"><i class="fas fa-download me-1"></i><span data-i18n="can_reload"></span></button>
+        <button class="btn btn-sm btn-outline-light" id="cmdReset"><i class="fas fa-arrow-rotate-left me-1"></i><span data-i18n="bench_preset"></span></button>
+        <button class="btn btn-sm btn-accent ms-auto" id="cmdSave"><i class="fas fa-check me-1"></i><span data-i18n="can_apply"></span></button>
+      </div>
+      <div class="table-responsive">
+        <table class="can-map stack" id="cmdTable">
+          <thead><tr>
+            <th data-i18n="bench_col_group"></th><th data-i18n="bench_col_label"></th><th data-i18n="bench_col_name"></th>
+            <th>ID</th><th data-i18n="can_29bit"></th><th data-i18n="bench_col_sub"></th><th data-i18n="bench_col_idx"></th>
+            <th>DLC</th><th data-i18n="bench_col_stopped"></th><th></th>
+          </tr></thead>
+          <tbody id="cmdRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <details class="card mb-3">
+    <summary class="card-header d-flex align-items-center gap-2"><span data-i18n="bench_signals"></span></summary>
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="small" id="conn">-</span>
+        <button class="btn btn-sm btn-outline-light ms-auto" id="demo"><i class="fas fa-wave-square me-1"></i><span id="demoText"></span></button>
+      </div>
+      <p class="text-muted small" data-i18n="bench_hint"></p>
+      <div class="table-responsive">
+        <table class="can-map stack" id="sigTable">
+          <thead><tr>
+            <th data-i18n="bench_signal"></th><th data-i18n="bench_value"></th><th data-i18n="bench_age"></th>
+            <th style="width:38%" data-i18n="bench_set"></th><th data-i18n="bench_hold"></th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="text-muted small py-2" id="empty" style="display:none" data-i18n="bench_empty"></div>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary class="card-header" data-i18n="bench_can"></summary>
+    <div class="card-body">
+      <div class="row g-2 align-items-end">
+        <div class="col-6 col-md-3">
+          <label class="form-label small mb-1" for="canId" data-i18n="bench_can_id"></label>
+          <input class="form-control form-control-sm" id="canId" value="0x77000C" spellcheck="false">
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="form-check mb-1">
+            <input class="form-check-input" type="checkbox" id="canExt" checked>
+            <label class="form-check-label small" for="canExt" data-i18n="can_29bit"></label>
+          </div>
+        </div>
+        <div class="col-12 col-md-5">
+          <label class="form-label small mb-1" for="canData" data-i18n="bench_can_data"></label>
+          <input class="form-control form-control-sm" id="canData" value="660016000400" maxlength="16" spellcheck="false">
+        </div>
+        <div class="col-12 col-md-2">
+          <button class="btn btn-sm btn-accent w-100" id="canSend"><i class="fas fa-paper-plane me-1"></i><span data-i18n="bench_send"></span></button>
+        </div>
+      </div>
+      <div class="form-text" data-i18n="bench_can_hint"></div>
+    </div>
+  </details>
+</div>
+<script src="/i18n.js"></script>
+<script src="/nd.js"></script>
+<script src="/bench.js"></script>
+</body>
+</html>

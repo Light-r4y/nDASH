@@ -1,0 +1,6 @@
+# Applied with `idf.py -D NDASH_CONSOLE=uart ...` (see the top-level CMakeLists.txt): logs on
+# UART0 (GPIO43/44) instead of the native USB. For boards with a UART-USB bridge (e.g. the
+# CH343 on some Waveshare 7" boards), and for the 7" boards in general, where the native USB
+# shares its pins with CAN.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=n
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y
