@@ -1,4 +1,4 @@
-# nDash — CAN-приборная панель для rusEFI на ESP32-S3
+# nDash — CAN-приборная панель (для rusEFI и не только) на ESP32-S3
 
 [English](README.md) | **Русский**
 
