@@ -1,4 +1,4 @@
-# nDash — CAN dashboard for rusEFI on ESP32-S3
+# nDash — CAN dashboard (for rusEFI and others) on ESP32-S3
 
 **English** | [Русский](README_ru.md)
 
