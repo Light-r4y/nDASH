@@ -2,4 +2,4 @@
 
 You will need solder wire like in this picture
 
-![brightness](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/upgrade_for_brightness_7.png)
+![brightness](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/upgrade_for_brightness_7.png)
