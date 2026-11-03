@@ -6,7 +6,7 @@ See https://github.com/Light-r4y/uaDASH/releases for official release which incl
 
 ## rusEFI open source ultra affordable CAN-bus dashboard
 
-![main_screen](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/main_screen.png)
+![main_screen](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/main_screen.png) 
 
 The device can display engine operating parameters and bench test coils and injectors.
 
@@ -23,11 +23,11 @@ For save settings after reboot/power cycle need press "Save" button.
 
 Bench test screen:
 
-![bench_screen](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/bench_screen.png)
+![bench_screen](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/bench_screen.png)
 
 Settings screen:
 
-![bench_screen](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/settings_screen.png)
+![bench_screen](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/settings_screen.png)
 
 -------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ https://espressif.github.io/esptool-js/
 
 
 
-![esp-flasher](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/esp-flasher.png)
+![esp-flasher](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/esp-flasher.png)
 
 -------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ Required library:
 
 - ESP32_IO_Expander@1.1.0 (if use Waveshare board)
 
-![build_settings](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/adruino_settings.jpg)
+![build_settings](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/adruino_settings.jpg)
 
 
 [README-GUITION.md](README-GUITION.md)
