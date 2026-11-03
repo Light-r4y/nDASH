@@ -43,10 +43,10 @@ CAN transceiver TX -- PIN_17
 CAN transceiver RX -- PIN_18 (buld resistor divider to 3.3V input or use 3V CAN transceiver)
 
 
-![assembled1](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/7.png)
+![assembled1](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/7.png)
 
 
-![assembled2](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/8.png)
+![assembled2](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/8.png)
 
 
-![assembled3](https://github.com/Light-r4y/dash5_esp32s3/blob/main/media/6.jpeg)
+![assembled3](https://github.com/Light-r4y/dash5_esp32s3/blob/v1/media/6.jpeg)
